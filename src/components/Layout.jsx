@@ -4,6 +4,7 @@ import Dashboard from '../pages/Dashboard';
 import DepartmentManagement from '../pages/DepartmentManagement';
 import DivisionManagement from '../pages/DivisionManagement';
 // import EmailTemplateManager from '../pages/EmailTemplateManager';
+import EmployeeForm from '../pages/EmployeeForm';
 import FlowApprove from '../pages/FlowApprove';
 import NotificationCenter from '../pages/NotificationCenter';
 import Orders from '../pages/Orders';
@@ -51,6 +52,8 @@ const Layout = () => {
         return <DepartmentManagement />;
       case 'servicetransferform':
         return <ServiceTransferForm />;
+      case 'employees':
+          return <EmployeeForm />;
             
       default:
         return <Dashboard />;
@@ -211,6 +214,14 @@ const Layout = () => {
                   className="block w-full text-left p-2 rounded hover:bg-gray-200"
                 >
                   Service Transfer form
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setCurrentPage('employees')}
+                  className="block w-full text-left p-2 rounded hover:bg-gray-200"
+                >
+                  Employee Form
                 </button>
               </li>
             </ul>
