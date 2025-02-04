@@ -1,4 +1,4 @@
-import { AlertCircle, Calendar, Clock, User } from 'lucide-react';
+import { AlertCircle, Calendar, Clock, Edit, User } from 'lucide-react';
 import { useState } from 'react';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card';
@@ -8,6 +8,7 @@ export default function ActingDutySelector() {
   const [periodMode, setPeriodMode] = useState('single');
   const [showError, setShowError] = useState(false);
   const [errorMessages, setErrorMessages] = useState([]);
+  const [editingId, setEditingId] = useState(null);
   const [currentPeriod, setCurrentPeriod] = useState({
     startDate: '',
     endDate: '',
@@ -18,15 +19,20 @@ export default function ActingDutySelector() {
     position: ''
   });
 
+  const determineTimeType = (start, end) => {
+    if (start === '08:30' && end === '16:30') return 'full';
+    if (start === '08:30' && end === '12:00') return 'morning';
+    if (start === '13:00' && end === '16:30') return 'afternoon';
+    return 'morning';
+  };
+
   const multipleTimeRangesStart = {
-    // full: { start: '08:30', end: '16:30', label: 'เต็มวัน (08:30 - 16:30)' },
-    morning: { start: '08:30', end: '16:30', label: 'เริ่ม เช่า (08:30 - 16:30)' },
+    morning: { start: '08:30', end: '16:30', label: 'เริ่ม เช้า (08:30 - 16:30)' },
     afternoon: { start: '13:00', end: '16:30', label: 'เริ่ม บ่าย (13:00 - 16:30)' }
   };
 
   const multipleTimeRangesEnd = {
-    // full: { start: '08:30', end: '16:30', label: 'เต็มวัน (08:30 - 16:30)' },
-    morning: { start: '08:30', end: '12:00', label: 'สิ้นสุดในช่วงเช่า (08:30 - 12:00)' },
+    morning: { start: '08:30', end: '12:00', label: 'สิ้นสุดในช่วงเช้า (08:30 - 12:00)' },
     afternoon: { start: '13:30', end: '16:30', label: 'สิ้นสุดในช่วงบ่าย (13:00 - 16:30)' }
   };
 
@@ -96,7 +102,7 @@ export default function ActingDutySelector() {
     const timeRangesEnd = periodMode === 'single' ? singleTimeRanges : multipleTimeRangesEnd;
     const startTimeRange = timeRangesStart[periodMode === 'single' ? currentPeriod.type : currentPeriod.startType];
     const endTimeRange = timeRangesEnd[periodMode === 'single' ? currentPeriod.type : currentPeriod.endType];
-    debugger;
+
     const newPeriod = {
       ...currentPeriod,
       endDate: periodMode === 'single' ? currentPeriod.startDate : currentPeriod.endDate,
@@ -104,10 +110,16 @@ export default function ActingDutySelector() {
       startTimeEnd: startTimeRange.end,
       endTimeStart: endTimeRange.start,
       endTimeEnd: endTimeRange.end,
-      id: `${currentPeriod.startDate}-${currentPeriod.deputy}-${Date.now()}`
+      id: editingId || `${currentPeriod.startDate}-${currentPeriod.deputy}-${Date.now()}`
     };
-    
-    setPeriods([...periods, newPeriod]);
+
+    if (editingId) {
+      setPeriods(periods.map(p => p.id === editingId ? newPeriod : p));
+      setEditingId(null);
+    } else {
+      setPeriods([...periods, newPeriod]);
+    }
+
     setCurrentPeriod({
       startDate: '',
       endDate: '',
@@ -117,6 +129,14 @@ export default function ActingDutySelector() {
       deputy: '',
       position: ''
     });
+  };
+
+  const editPeriod = (id) => {
+    const periodToEdit = periods.find(p => p.id === id);
+    if (periodToEdit) {
+      setCurrentPeriod(periodToEdit);
+      setEditingId(id);
+    }
   };
 
   const removePeriod = (id) => {
@@ -291,7 +311,7 @@ export default function ActingDutySelector() {
               onClick={addPeriod}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
             >
-              เพิ่ม
+              {editingId ? 'อัปเดต' : 'เพิ่ม'}
             </button>
           </div>
 
@@ -335,18 +355,49 @@ export default function ActingDutySelector() {
                           )}
                         </div>
                       </div>
-                      <button
-                        onClick={() => removePeriod(period.id)}
-                        className="text-red-600 hover:text-red-700"
-                      >
-                        ลบ
-                      </button>
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => editPeriod(period.id)}
+                          className="text-blue-600 hover:text-blue-700"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => removePeriod(period.id)}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          ลบ
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))
               )}
             </div>
           </div>
+
+          {/* <div className="flex justify-center space-x-2 mt-6 pt-6 border-t">
+  <button
+    type="button"
+    className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+    onClick={() => {
+      // TODO: Implement cancel logic
+      console.log('Cancel clicked');
+    }}
+  >
+    ยกเลิก
+  </button>
+  <button
+    type="button"
+    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+    onClick={() => {
+      // TODO: Implement save logic
+      console.log('Save clicked', periods);
+    }}
+  >
+    บันทึก
+  </button>
+</div> */}
         </div>
       </CardContent>
     </Card>

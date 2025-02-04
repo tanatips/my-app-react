@@ -126,7 +126,7 @@ const EmailTemplateManager = () => {
     <div className="p-6">
       <div className="bg-white rounded-lg shadow">
         <div className="border-b px-6 py-4 flex justify-between items-center">
-          <h2 className="text-xl font-bold">จัดการ Email Template</h2>
+          <h2 className="text-xl font-bold">บริหารจัดการรูปแบบข้อความแจ้งเตือนของ E-Mail</h2>
           <button
             onClick={() => {
               setShowCreate(true);

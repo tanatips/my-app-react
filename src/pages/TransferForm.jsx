@@ -2,18 +2,20 @@ import { X } from 'lucide-react';
 import React, { useState } from 'react';
 import { Card, CardContent } from '../components/ui/Card';
 
-// กำหนดค่า default เป็น empty function
 const TransferForm = ({ onClose = () => {} }) => {
   const [formData, setFormData] = useState({
     sourceDepartment: 'สำนักงานเลขานุการกรม',
     sourceUnit: 'ฝ่ายบริหารทั่วไป',
     sourcePosition: 'หัวหน้าฝ่ายบริหารทั่วไป',
+    sourcePositionLevel: 'ชำนาญการพิเศษ',
     targetDepartment: '',
     targetUnit: '',
     targetPosition: '',
+    targetPositionLevel: '',
     transferDate: '',
     status: '',
-    referenceNumber: ''
+    referenceNumber: '',
+    orderEffectiveDate: ''
   });
 
   const handleSubmit = (e) => {
@@ -22,34 +24,40 @@ const TransferForm = ({ onClose = () => {} }) => {
   };
 
   const handleClose = () => {
-    // ตรวจสอบว่ามีการกรอกข้อมูลหรือไม่
     const hasChanges = Object.values(formData).some(value => 
       value !== '' && 
       value !== formData.sourceDepartment && 
       value !== formData.sourceUnit && 
       value !== formData.sourcePosition
     );
-    console.log("hasChanges:"+hasChanges);
     if (hasChanges) {
-      // ถ้ามีการกรอกข้อมูล แสดง confirm
       if (window.confirm('คุณต้องการปิดแบบฟอร์มหรือไม่? ข้อมูลที่กรอกจะไม่ถูกบันทึก')) {
-        // ตรวจสอบว่า onClose เป็น function หรือไม่
-        console.log(typeof onClose);
         if (typeof onClose === 'function') {
           onClose();
         }
       }
     } else {
-      // ถ้าไม่มีการกรอกข้อมูล ปิดได้เลย
       if (typeof onClose === 'function') {
         onClose();
       }
     }
   };
 
+  const FormField = ({ label, description, children, required }) => (
+    <div className="space-y-1">
+      <label className="block text-sm font-medium text-gray-700">
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+      {description && (
+        <p className="text-sm text-gray-500">{description}</p>
+      )}
+      {children}
+    </div>
+  );
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="bg-white rounded-lg w-full max-w-3xl p-6 relative">
+      <div className="bg-white rounded-lg w-full max-w-5xl p-6 relative">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-2">
@@ -92,6 +100,7 @@ const TransferForm = ({ onClose = () => {} }) => {
                 <p>สำนัก/กอง: {formData.sourceDepartment}</p>
                 <p>หน่วยงาน: {formData.sourceUnit}</p>
                 <p>ตำแหน่ง: {formData.sourcePosition}</p>
+                <p>ระดับตำแหน่ง: {formData.sourcePositionLevel}</p>
               </div>
             </CardContent>
           </Card>
@@ -100,61 +109,121 @@ const TransferForm = ({ onClose = () => {} }) => {
           <Card className="p-4">
             <CardContent>
               <h3 className="font-semibold mb-3">โอนย้ายไปยัง</h3>
-              <div className="space-y-3">
-                <select 
-                  className="w-full p-2 border rounded"
-                  value={formData.targetDepartment}
-                  onChange={(e) => setFormData({...formData, targetDepartment: e.target.value})}
+              <div className="space-y-4">
+                <FormField 
+                  label="สำนัก/กอง" 
+                  required
                 >
-                  <option value="">เลือกสำนัก/กอง</option>
-                  <option value="1">สำนัก 1</option>
-                  <option value="2">สำนัก 2</option>
-                </select>
+                  <select 
+                    className="w-full p-2 border rounded"
+                    value={formData.targetDepartment}
+                    onChange={(e) => setFormData({...formData, targetDepartment: e.target.value})}
+                  >
+                    <option value="">เลือกสำนัก/กอง</option>
+                    <option value="1">สำนัก 1</option>
+                    <option value="2">สำนัก 2</option>
+                  </select>
+                </FormField>
                 
-                <select 
-                  className="w-full p-2 border rounded"
-                  value={formData.targetUnit}
-                  onChange={(e) => setFormData({...formData, targetUnit: e.target.value})}
+                <FormField 
+                  label="หน่วยงาน"
+                  required
                 >
-                  <option value="">เลือกหน่วยงาน</option>
-                  <option value="1">หน่วยงาน 1</option>
-                  <option value="2">หน่วยงาน 2</option>
-                </select>
+                  <select 
+                    className="w-full p-2 border rounded"
+                    value={formData.targetUnit}
+                    onChange={(e) => setFormData({...formData, targetUnit: e.target.value})}
+                  >
+                    <option value="">เลือกหน่วยงาน</option>
+                    <option value="1">หน่วยงาน 1</option>
+                    <option value="2">หน่วยงาน 2</option>
+                  </select>
+                </FormField>
 
-                <select 
-                  className="w-full p-2 border rounded"
-                  value={formData.targetPosition}
-                  onChange={(e) => setFormData({...formData, targetPosition: e.target.value})}
+                <FormField 
+                  label="ตำแหน่ง"
+                  required
                 >
-                  <option value="">เลือกตำแหน่ง</option>
-                  <option value="1">ตำแหน่ง 1</option>
-                  <option value="2">ตำแหน่ง 2</option>
-                </select>
+                  <select 
+                    className="w-full p-2 border rounded"
+                    value={formData.targetPosition}
+                    onChange={(e) => setFormData({...formData, targetPosition: e.target.value})}
+                  >
+                    <option value="">เลือกตำแหน่ง</option>
+                    <option value="1">ตำแหน่ง 1</option>
+                    <option value="2">ตำแหน่ง 2</option>
+                  </select>
+                </FormField>
 
-                <input 
-                  type="date"
-                  className="w-full p-2 border rounded"
-                  value={formData.transferDate}
-                  onChange={(e) => setFormData({...formData, transferDate: e.target.value})}
-                />
-
-                <select 
-                  className="w-full p-2 border rounded"
-                  value={formData.status}
-                  onChange={(e) => setFormData({...formData, status: e.target.value})}
+                <FormField 
+                  label="ระดับตำแหน่ง"
+                  required
                 >
-                  <option value="">เลือกสถานะ</option>
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                </select>
+                  <select 
+                    className="w-full p-2 border rounded"
+                    value={formData.targetPositionLevel}
+                    onChange={(e) => setFormData({...formData, targetPositionLevel: e.target.value})}
+                  >
+                    <option value="">เลือกระดับตำแหน่ง</option>
+                    <option value="ปฏิบัติการ">ปฏิบัติการ</option>
+                    <option value="ชำนาญการ">ชำนาญการ</option>
+                    <option value="ชำนาญการพิเศษ">ชำนาญการพิเศษ</option>
+                    <option value="เชี่ยวชาญ">เชี่ยวชาญ</option>
+                    <option value="ทรงคุณวุฒิ">ทรงคุณวุฒิ</option>
+                  </select>
+                </FormField>
 
-                <input 
-                  type="text"
-                  placeholder="หมายเลขคำสั่ง"
-                  className="w-full p-2 border rounded"
-                  value={formData.referenceNumber}
-                  onChange={(e) => setFormData({...formData, referenceNumber: e.target.value})}
-                />
+                <FormField 
+                  label="วันที่โอนย้าย"
+                  required
+                >
+                  <input 
+                    type="date"
+                    className="w-full p-2 border rounded"
+                    value={formData.transferDate}
+                    onChange={(e) => setFormData({...formData, transferDate: e.target.value})}
+                  />
+                </FormField>
+
+                <FormField 
+                  label="สถานะ"
+                  required
+                >
+                  <select 
+                    className="w-full p-2 border rounded"
+                    value={formData.status}
+                    onChange={(e) => setFormData({...formData, status: e.target.value})}
+                  >
+                    <option value="">เลือกสถานะ</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                  </select>
+                </FormField>
+
+                <FormField 
+                  label="หมายเลขคำสั่ง"
+                  required
+                >
+                  <input 
+                    type="text"
+                    className="w-full p-2 border rounded"
+                    value={formData.referenceNumber}
+                    onChange={(e) => setFormData({...formData, referenceNumber: e.target.value})}
+                    placeholder="เลขที่คำสั่ง"
+                  />
+                </FormField>
+
+                <FormField 
+                  label="วันที่มีผลคำสั่ง"
+                  required
+                >
+                  <input 
+                    type="date"
+                    className="w-full p-2 border rounded"
+                    value={formData.orderEffectiveDate}
+                    onChange={(e) => setFormData({...formData, orderEffectiveDate: e.target.value})}
+                  />
+                </FormField>
               </div>
             </CardContent>
           </Card>

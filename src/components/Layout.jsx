@@ -4,6 +4,7 @@ import Dashboard from '../pages/Dashboard';
 import DepartmentManagement from '../pages/DepartmentManagement';
 import DivisionManagement from '../pages/DivisionManagement';
 // import EmailTemplateManager from '../pages/EmailTemplateManager';
+import CriteriaForm from '../pages/CriteriaForm';
 import EmployeeForm from '../pages/EmployeeForm';
 import FlowApprove from '../pages/FlowApprove';
 import NotificationCenter from '../pages/NotificationCenter';
@@ -11,11 +12,16 @@ import Orders from '../pages/Orders';
 import PersonalInfoForm from '../pages/PersonalInfoForm';
 import Products from '../pages/Products';
 import Reports from '../pages/Reports';
+import RequestSearch from '../pages/RequestSearch';
+import ResetPassword from '../pages/ResetPassword';
 import ServiceTransferForm from '../pages/ServiceTransferForm';
 import TransferForm from '../pages/TransferForm';
+import UserRegistrationForm from '../pages/UserRegistrationForm';
 import Users from '../pages/Users';
+import WirelessLANForm from '../pages/WirelessLANForm';
 import WorkflowApproval from '../pages/WorkflowApproval';
 import EmailTemplateManager from './EmailTemplate/EmailTemplateManager';
+import { EOfficeRegistrationForm } from './Forms/InternetEoffice/EOfficeRegistrationForm';
 
 const Layout = () => {
   const [currentPage, setCurrentPage] = useState('dashboard');
@@ -54,7 +60,20 @@ const Layout = () => {
         return <ServiceTransferForm />;
       case 'employees':
           return <EmployeeForm />;
-            
+      case 'resetpassword':
+            return <ResetPassword />;
+      case 'criteriaform':
+              return <CriteriaForm />;
+      case 'wirelesslanform':
+        return <WirelessLANForm />;
+      case 'userregistrationform':
+        return <UserRegistrationForm />;
+
+      case 'eofficeregistrationform':
+          return <EOfficeRegistrationForm />;
+      case 'requestsearch':
+          return <RequestSearch />;
+              
       default:
         return <Dashboard />;
     }
@@ -222,6 +241,55 @@ const Layout = () => {
                   className="block w-full text-left p-2 rounded hover:bg-gray-200"
                 >
                   Employee Form
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setCurrentPage('resetpassword')}
+                  className="block w-full text-left p-2 rounded hover:bg-gray-200"
+                >
+                  Reset Password
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setCurrentPage('criteriaform')}
+                  className="block w-full text-left p-2 rounded hover:bg-gray-200"
+                >
+                  Criteria Form
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setCurrentPage('wirelesslanform')}
+                  className="block w-full text-left p-2 rounded hover:bg-gray-200"
+                >
+                  Wireless lan form
+                </button>
+              </li>
+
+              <li>
+                <button
+                  onClick={() => setCurrentPage('userregistrationform')}
+                  className="block w-full text-left p-2 rounded hover:bg-gray-200"
+                >
+                  User Registration Form
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setCurrentPage('eofficeregistrationform')}
+                  className="block w-full text-left p-2 rounded hover:bg-gray-200"
+                >
+                  E-Office Registration form
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setCurrentPage('requestsearch')}
+                  className="block w-full text-left p-2 rounded hover:bg-gray-200"
+                >
+                  RequestSearch
                 </button>
               </li>
             </ul>

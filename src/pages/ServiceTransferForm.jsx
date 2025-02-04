@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import ServiceTransferTable from '../components/ServiceTransfer/ServiceTransferTable';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -9,14 +10,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 const ServiceTransferForm = () => {
   // State สำหรับเก็บข้อมูลฟอร์ม
   const [formData, setFormData] = useState({
-    employeeId: '',
+    positionId: '',
     employeeName: '',
     currentDepartment: '',
+    otherCurrentDepartment: '',
     targetDepartment: '',
     startDate: '',
     endDate: '',
     reason: '',
-    status: 'รอดำเนินการ'
+    status: 'รอดำเนินการ',  
+    orderNumber: '', // เพิ่มฟิลด์เลขที่คำสั่ง
+    orderEffectiveDate: '' // เพิ่มฟิลด์วันที่มีผลคำสั่ง
   });
 
   // State สำหรับเก็บสถานะการโหลดข้อมูล
@@ -42,7 +46,8 @@ const ServiceTransferForm = () => {
     "ฝ่ายการเงิน",
     "ฝ่ายบุคคล",
     "ฝ่ายไอที",
-    "ฝ่ายขาย"
+    "ฝ่ายขาย",
+    "อื่นๆ"
   ];
 
   // ฟังก์ชันจำลองการตรวจสอบสิทธิ์
@@ -114,12 +119,14 @@ const ServiceTransferForm = () => {
     setError(null);
 
     // ตรวจสอบการกรอกข้อมูลที่จำเป็น
-    if (!formData.employeeId || !formData.employeeName || 
-        !formData.currentDepartment || !formData.targetDepartment ||
-        !formData.startDate || !formData.endDate || !formData.reason) {
-      setError('กรุณากรอกข้อมูลให้ครบถ้วน');
-      return;
-    }
+    if (!formData.positionId || !formData.employeeName || 
+      !formData.currentDepartment || !formData.targetDepartment ||
+      !formData.startDate || !formData.endDate || !formData.reason ||
+      !formData.orderNumber || !formData.orderEffectiveDate) {
+    setError('กรุณากรอกข้อมูลให้ครบถ้วน');
+    return;
+  }
+  
 
     // ตรวจสอบความถูกต้องของวันที่
     if (!validateDates()) {
@@ -166,7 +173,7 @@ const ServiceTransferForm = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <Card className="max-w-2xl mx-auto">
+      <Card className="max-w-6xl mx-auto">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">
             แบบฟอร์มการช่วยราชการ
@@ -182,11 +189,11 @@ const ServiceTransferForm = () => {
             {/* ข้อมูลพนักงาน */}
             <div className="space-y-4">
               <div>
-                <Label htmlFor="employeeId">รหัสพนักงาน</Label>
+                <Label htmlFor="positionId">รหัสตำแหน่ง</Label>
                 <Input
-                  id="employeeId"
-                  value={formData.employeeId}
-                  onChange={(e) => setFormData({...formData, employeeId: e.target.value})}
+                  id="positionId"
+                  value={formData.positionId}
+                  onChange={(e) => setFormData({...formData, positionId: e.target.value})}
                   placeholder="กรุณากรอกรหัสพนักงาน"
                   className="mt-1"
                 />
@@ -223,25 +230,15 @@ const ServiceTransferForm = () => {
                 </Select>
               </div>
 
-              {/* หน่วยงานที่ไปช่วยราชการ */}
-              <div>
-                <Label htmlFor="targetDepartment">หน่วยงานที่ไปช่วยราชการ</Label>
-                <Select
-                  value={formData.targetDepartment}
-                  onValueChange={(value) => setFormData({...formData, targetDepartment: value})}
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="เลือกหน่วยงานที่ไปช่วยราชการ" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {departments.map((dept) => (
-                      <SelectItem key={dept} value={dept}>
-                        {dept}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              {formData.currentDepartment === 'อื่นๆ' && (
+                <div className="mt-2">
+                  <Input
+                    placeholder="ระบุหน่วยงานต้นสังกัด"
+                    value={formData.otherCurrentDepartment}
+                    onChange={(e) => setFormData({...formData, otherCurrentDepartment: e.target.value})}
+                  />
+                </div>
+              )}
 
               {/* วันที่เริ่มต้น-สิ้นสุด */}
               <div className="grid grid-cols-2 gap-4">
@@ -266,6 +263,29 @@ const ServiceTransferForm = () => {
                   />
                 </div>
               </div>
+{/* เพิ่มฟิลด์เลขที่คำสั่งและวันที่มีผลคำสั่ง ก่อนส่วนของเหตุผล */}
+<div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="orderNumber">เลขที่คำสั่ง</Label>
+                <Input
+                  id="orderNumber"
+                  value={formData.orderNumber}
+                  onChange={(e) => setFormData({...formData, orderNumber: e.target.value})}
+                  placeholder="กรุณากรอกเลขที่คำสั่ง"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="orderEffectiveDate">วันที่มีผลคำสั่ง</Label>
+                <Input
+                  id="orderEffectiveDate"
+                  type="date"
+                  value={formData.orderEffectiveDate}
+                  onChange={(e) => setFormData({...formData, orderEffectiveDate: e.target.value})}
+                  className="mt-1"
+                />
+              </div>
+            </div>
 
               {/* เหตุผลในการช่วยราชการ */}
               <div>
@@ -279,26 +299,7 @@ const ServiceTransferForm = () => {
                   rows={4}
                 />
               </div>
-
-              {/* แสดงสถานะการช่วยราชการ */}
-              <div>
-                <Label htmlFor="status">สถานะ</Label>
-                <Select
-                  value={formData.status}
-                  onValueChange={(value) => setFormData({...formData, status: value})}
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="เลือกสถานะ" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {statuses.map((status) => (
-                      <SelectItem key={status} value={status}>
-                        {status}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+             
             </div>
 
             {/* ปุ่มดำเนินการ */}
@@ -311,6 +312,7 @@ const ServiceTransferForm = () => {
               </Button>
             </div>
           </form>
+          <ServiceTransferTable/>
         </CardContent>
       </Card>
     </div>
