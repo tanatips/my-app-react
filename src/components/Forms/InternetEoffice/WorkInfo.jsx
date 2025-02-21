@@ -1,4 +1,5 @@
 import { React, useState } from 'react';
+import { SearchableSelect } from '../../utils/SearchableSelect';
 
 const WorkInfo = ({ formData, handleChange }) => {
   // Mock data สำหรับ dropdowns
@@ -68,6 +69,9 @@ const WorkInfo = ({ formData, handleChange }) => {
     { id: '14', name: 'เจ้าพนักงานการเงินและบัญชีชำนาญงาน' },
     { id: '15', name: 'เจ้าพนักงานการเงินและบัญชีปฏิบัติงาน' }
   ]);
+  const handleComboboxChange = (field) => (value) => {
+    handleChange({ target: { name: field, value } });
+  };
   return (
     <div className="space-y-6 bg-gray-50 p-4 rounded">
       <h3 className="font-semibold text-lg">ข้อมูลการปฏิบัติราชการ</h3>
@@ -183,7 +187,15 @@ const WorkInfo = ({ formData, handleChange }) => {
                   <option value="4">คลังเขต 4</option>
                   <option value="5">คลังเขต 5</option>
                 </select>
-                <span className="mr-2">คลังจังหวัด</span>
+                <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="workLocation"
+                  value="treasuryRegions"
+                  className="mr-2"
+                />
+                คลังจังหวัด
+              </label>
                 <select
                   name="provincialTreasury"
                   value={formData.provincialTreasury}
@@ -206,7 +218,7 @@ const WorkInfo = ({ formData, handleChange }) => {
       <div className="space-y-4">
       <div>
           <label className="block mb-1">สำนัก/กอง/ศูนย์/สถาบัน/กลุ่ม</label>
-          <select
+          {/* <select
             name="division"
             value={formData.division}
             onChange={handleChange}
@@ -218,11 +230,17 @@ const WorkInfo = ({ formData, handleChange }) => {
                 {division.name}
               </option>
             ))}
-          </select>
+          </select> */}
+          <SearchableSelect
+            options={divisions}
+            value={formData.division}
+            onChange={handleComboboxChange('division')}
+            placeholder="เลือกสำนัก/กอง/ศูนย์"
+          />
         </div>
         <div>
           <label className="block mb-1">กลุ่มงาน/ฝ่าย</label>
-          <select
+          {/* <select
             name="department"
             value={formData.department}
             onChange={handleChange}
@@ -235,7 +253,15 @@ const WorkInfo = ({ formData, handleChange }) => {
                 {dept.name}
               </option>
             ))}
-          </select>
+          </select> */}
+          <SearchableSelect
+    options={formData.division ? departments[formData.division] || [] : []}
+    value={formData.department}
+    onChange={handleComboboxChange('department')}
+    placeholder="เลือกกลุ่มงาน/ฝ่าย"
+    disabled={!formData.division}
+  />
+          
         </div>
         <div>
           <label className="block mb-1">ตำแหน่ง</label>

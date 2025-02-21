@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 // Create a default export function component
-const WorkflowApproval = () => {
+const WorkflowApproval2 = () => {
   const [previousStates, setPreviousStates] = useState({});
   const [showSendBackDialog, setShowSendBackDialog] = useState(false);
   const [currentStep, setCurrentStep] = useState(2);
@@ -9,30 +9,33 @@ const WorkflowApproval = () => {
     {
       order: 1,
       title: 'พนักงานยื่นคำขอ',
-      description: 'พนักงานส่งคำขอใช้งานระบบ WiFi',
-      assignee: 'นายสมชาย ใจดี',
+      // description: 'พนักงานส่งคำขอใช้งานระบบ WiFi',
+      assignee: 'ณรงค์ กิจเจริญ',
       status: 'submitted',
       completedAt: '17/04/2024 09:30'
     },
     {
       order: 2,
-      title: 'ผอ.กอง พิจารณา',
-      description: 'ผู้อำนวยการกองพิจารณาคำขอ',
-      assignee: 'นางสาวสมศรี รักงาน',
+      title: 'นักทรัพยากรบุคคล พิจารณา',
+      // description: 'ผู้อำนวยการกองพิจารณาคำขอ',
+      assignee: 'ทีม นักทรัพยากรบุคคล',
+      approver: 'สมศักดิ์ ประดิษฐ์',
       status: 'pending'
     },
     {
       order: 3,
-      title: 'ผอ.ศูนย์ พิจารณา',
-      description: 'ผู้อำนวยการศูนย์พิจารณาคำขอขั้นสุดท้าย',
-      assignee: 'นายมานะ ทำงาน',
+      title: 'ผู้อำนวยการ พิจารณา',
+      // description: 'ผู้อำนวยการศูนย์พิจารณาคำขอขั้นสุดท้าย',
+      assignee: 'ทีม ผู้อำนวยการ',
+      approver: 'ประดิษฐ์ ใจดี',
       status: 'pending'
     },
     {
       order: 4,
-      title: 'ดำเนินการทางเทคนิค',
-      description: 'กลุ่มเครือข่ายดำเนินการตั้งค่าระบบ',
-      assignee: 'ทีม Network & Security',
+      title: 'นักวิชาการคอมพิวเตอร์ ดำเนินการ',
+      // description: 'กลุ่มเครือข่ายดำเนินการตั้งค่าระบบ',
+      assignee: 'ทีม นักวิชาการคอมพิวเตอร์',
+      operator: 'กนกวรรณ ยอดทอง',
       status: 'pending'
     }
   ]);
@@ -411,26 +414,16 @@ const SendBackDialog = ({ isOpen, onClose, onSendBack }) => {
       </div>
     );
   };
-  const formatThaiBuddhistDate = (date) => {
-    const thaiDate = new Date(date);
-    const buddhistYear = thaiDate.getFullYear() + 543;
-    const month = String(thaiDate.getMonth() + 1).padStart(2, '0');
-    const day = String(thaiDate.getDate()).padStart(2, '0');
-    const hours = String(thaiDate.getHours()).padStart(2, '0');
-    const minutes = String(thaiDate.getMinutes()).padStart(2, '0');
-    return `${day}/${month}/${buddhistYear} ${hours}:${minutes}`;
-  };
   // WorkflowStep Component
   const WorkflowStep = ({ step, currentStep, onApprove, onReject, onSendBack  }) => {
     const [showRejectDialog, setShowRejectDialog] = useState(false);
     const [showSignatureDialog, setShowSignatureDialog] = useState(false);
     const isActive = step.order === currentStep;
-    const isPassed = step.order < currentStep;
     const isRejected = step.status === 'rejected';
     const isTechnicalStep = step.order === 4;
     const isFirstStep = step.order === 1;
     const convertToBuddhistEra = (dateString) => {
-      return dateString.replace(/\/(\d{4})/, (match, year) => 
+      return dateString.replace(/\/(\d{4})/, (_match, year) => 
         `/${parseInt(year) + 543}`
       );
     }
@@ -445,11 +438,38 @@ const SendBackDialog = ({ isOpen, onClose, onSendBack }) => {
         </div>
         
         {step.assignee && (
+          <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+            {isFirstStep ? (
+              <>
+                <svg className="w-4 h-4" fill="none" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                <span>ผู้ขอใช้งาน: {step.assignee}</span>
+              </>
+            ) : (
+              <>
+                <svg className="w-4 h-4" fill="none" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <span>ทีมที่รับผิดชอบ: {step.assignee}</span>
+              </>
+            )}
+          </div>
+        )}
+        {step.approver && !isFirstStep && (
           <div className="flex items-center gap-2 text-sm text-gray-600 mb-3">
             <svg className="w-4 h-4" fill="none" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24">
               <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
-            <span>ผู้รับผิดชอบ: {step.assignee}</span>
+            <span>ผู้อนุมัติ: {step.approver}</span>
+          </div>
+        )}
+        {step.operator && isTechnicalStep && (
+          <div className="flex items-center gap-2 text-sm text-gray-600 mb-3">
+            <svg className="w-4 h-4" fill="none" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            <span>ผู้ดำเนินการ: {step.operator}</span>
           </div>
         )}
          {step.completedAt && (
@@ -628,4 +648,4 @@ const handleSendBack = (step, reason) => {
   );
 };
 
-export default WorkflowApproval;
+export default WorkflowApproval2;

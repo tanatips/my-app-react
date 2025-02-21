@@ -351,7 +351,15 @@ const UserRegistrationForm = () => {
                   <option value="4">คลังเขต 4</option>
                   <option value="5">คลังเขต 5</option>
                 </select>
-                <span className="mr-2">คลังจังหวัด</span>
+                <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="workLocation"
+                  value="treasuryRegions"
+                  className="mr-2"
+                />
+                คลังจังหวัด
+              </label>
                 <select
                   name="provincialTreasury"
                   value={formData.provincialTreasury}
@@ -368,7 +376,7 @@ const UserRegistrationForm = () => {
                 </select>
               </div>
             </div>
-          </div>
+        </div>
 
           {/* Division and department */}
           <div className="space-y-4 mt-4">

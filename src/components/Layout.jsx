@@ -4,11 +4,13 @@ import Dashboard from '../pages/Dashboard';
 import DepartmentManagement from '../pages/DepartmentManagement';
 import DivisionManagement from '../pages/DivisionManagement';
 // import EmailTemplateManager from '../pages/EmailTemplateManager';
+import ApprovalSearch from '../pages/ApprovalSearch';
 import CriteriaForm from '../pages/CriteriaForm';
 import EmployeeForm from '../pages/EmployeeForm';
 import FlowApprove from '../pages/FlowApprove';
 import NotificationCenter from '../pages/NotificationCenter';
 import Orders from '../pages/Orders';
+import PasswordChangeRequestForm from '../pages/PasswordChangeRequestForm';
 import PersonalInfoForm from '../pages/PersonalInfoForm';
 import Products from '../pages/Products';
 import Reports from '../pages/Reports';
@@ -20,12 +22,13 @@ import UserRegistrationForm from '../pages/UserRegistrationForm';
 import Users from '../pages/Users';
 import WirelessLANForm from '../pages/WirelessLANForm';
 import WorkflowApproval from '../pages/WorkflowApproval';
+import WorkflowApproval2 from '../pages/WorkflowApproval2';
 import EmailTemplateManager from './EmailTemplate/EmailTemplateManager';
 import { EOfficeRegistrationForm } from './Forms/InternetEoffice/EOfficeRegistrationForm';
 
 const Layout = () => {
   const [currentPage, setCurrentPage] = useState('dashboard');
-  const [isOpen, setIsOpen] = useState(true);
+  const [, setIsOpen] = useState(true);
   
   const renderPage = () => {
     switch (currentPage) {
@@ -41,6 +44,8 @@ const Layout = () => {
             return <FlowApprove />;
       case 'workflow':
               return <WorkflowApproval />;
+      case 'workflow2':
+                return <WorkflowApproval2 />;
       case 'actingDuty':
               return <ActingDutySelector />;
       case 'notification':
@@ -73,7 +78,11 @@ const Layout = () => {
           return <EOfficeRegistrationForm />;
       case 'requestsearch':
           return <RequestSearch />;
-              
+      case 'passwordchangerequestform':
+          return <PasswordChangeRequestForm />;
+      case 'approvalsearch':
+          return <ApprovalSearch />;
+       
       default:
         return <Dashboard />;
     }
@@ -176,7 +185,15 @@ const Layout = () => {
                   onClick={() => setCurrentPage('workflow')}
                   className="block w-full text-left p-2 rounded hover:bg-gray-200"
                 >
-                  Work Flow Approvval
+                  Work Flow Approval
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setCurrentPage('workflow2')}
+                  className="block w-full text-left p-2 rounded hover:bg-gray-200"
+                >
+                  Work Flow Approval 2
                 </button>
               </li>
               <li>
@@ -290,6 +307,22 @@ const Layout = () => {
                   className="block w-full text-left p-2 rounded hover:bg-gray-200"
                 >
                   RequestSearch
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setCurrentPage('passwordchangerequestform')}
+                  className="block w-full text-left p-2 rounded hover:bg-gray-200"
+                >
+                  Passwor Change Request form
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setCurrentPage('approvalsearch')}
+                  className="block w-full text-left p-2 rounded hover:bg-gray-200"
+                >
+                  Approval Search
                 </button>
               </li>
             </ul>

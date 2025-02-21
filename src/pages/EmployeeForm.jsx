@@ -14,7 +14,7 @@ import { default as React, useEffect, useRef, useState } from 'react';
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
-
+import PasswordValidation from "./PasswordValidation";
 
 const EmployeeForm = () => {
   const [focusedInput, setFocusedInput] = useState(null);
@@ -221,18 +221,43 @@ const [passwordError, setPasswordError] = useState('');
   
   const handlePasswordChange = (e) => {
     const newPassword = e.target.value;
+    const cursorPosition = e.target.selectionStart;
+    
     setFormData(prev => ({...prev, password: newPassword}));
     setPasswordError(validatePassword(newPassword));
+    
+    // กำหนด focused input เพื่อรักษา cursor
+    setFocusedInput('password');
+    
+    // รักษาตำแหน่ง cursor หลังจาก state update
+    requestAnimationFrame(() => {
+      if (inputRefs.current['password']) {
+        inputRefs.current['password'].setSelectionRange(cursorPosition, cursorPosition);
+      }
+    });
   };
   
   const handleConfirmPasswordChange = (e) => {
     const confirmPass = e.target.value;
+    const cursorPosition = e.target.selectionStart;
+    
     setFormData(prev => ({...prev, confirmPassword: confirmPass}));
+    
     if (confirmPass !== formData.password) {
       setPasswordError('รหัสผ่านไม่ตรงกัน');
     } else {
       setPasswordError('');
     }
+    
+    // กำหนด focused input เพื่อรักษา cursor
+    setFocusedInput('confirmPassword');
+    
+    // รักษาตำแหน่ง cursor หลังจาก state update
+    requestAnimationFrame(() => {
+      if (inputRefs.current['confirmPassword']) {
+        inputRefs.current['confirmPassword'].setSelectionRange(cursorPosition, cursorPosition);
+      }
+    });
   };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -692,8 +717,8 @@ const CollapsibleSection = ({ title, children, isOpen, onToggle }) => {
                   )}
                 </div>
             </CollapsibleSection>
- {/* ตั้งรหัสผ่าน */}
- <CollapsibleSection
+            {/* ตั้งรหัสผ่าน */}
+            <CollapsibleSection
               title="ตั้งรหัสผ่าน"
               isOpen={openSections.password}
               onToggle={() => toggleSection('password')}
@@ -703,7 +728,7 @@ const CollapsibleSection = ({ title, children, isOpen, onToggle }) => {
                 <div className="space-y-2">
                   <Label htmlFor="password">รหัสผ่าน</Label>
                   <div className="relative">
-                    <Input
+                  <Input
                       id="password"
                       name="password"
                       type={showPassword ? "text" : "password"}
@@ -734,7 +759,7 @@ const CollapsibleSection = ({ title, children, isOpen, onToggle }) => {
                 <div className="space-y-2">
                   <Label htmlFor="confirmPassword">ยืนยันรหัสผ่าน</Label>
                   <div className="relative">
-                    <Input
+                  <Input
                       id="confirmPassword"
                       name="confirmPassword"
                       type={showConfirmPassword ? "text" : "password"}
@@ -762,12 +787,17 @@ const CollapsibleSection = ({ title, children, isOpen, onToggle }) => {
                     </button>
                   </div>
                 </div>
+               
                 {passwordError && (
                   <div className="col-span-2">
                     <p className="text-sm text-red-500">{passwordError}</p>
                   </div>
                 )}
+                {/* เพิ่ม PasswordValidation component ตรงนี้ */}
                 <div className="col-span-2">
+                  <PasswordValidation password={formData.password} />
+                </div>
+                {/* <div className="col-span-2">
                   <p className="text-sm text-gray-500">
                     รหัสผ่านต้องประกอบด้วย:
                     <ul className="list-disc list-inside">
@@ -777,7 +807,7 @@ const CollapsibleSection = ({ title, children, isOpen, onToggle }) => {
                       <li>ตัวเลขอย่างน้อย 1 ตัว</li>
                     </ul>
                   </p>
-                </div>
+                </div> */}
               </div>
              
             </CollapsibleSection>
