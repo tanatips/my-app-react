@@ -19,7 +19,9 @@ import ResetPassword from '../pages/ResetPassword';
 import ServiceTransferForm from '../pages/ServiceTransferForm';
 import TransferForm from '../pages/TransferForm';
 import UserRegistrationForm from '../pages/UserRegistrationForm';
+import UserRoleAssignment from '../pages/UserRoleAssignment';
 import Users from '../pages/Users';
+import UserSearchApp from '../pages/UserSearchApp';
 import WirelessLANForm from '../pages/WirelessLANForm';
 import WorkflowApproval from '../pages/WorkflowApproval';
 import WorkflowApproval2 from '../pages/WorkflowApproval2';
@@ -82,7 +84,11 @@ const Layout = () => {
           return <PasswordChangeRequestForm />;
       case 'approvalsearch':
           return <ApprovalSearch />;
-       
+      case 'userroleassignment':
+            return <UserRoleAssignment />;
+      case 'usersearchapp':
+              return <UserSearchApp />;
+         
       default:
         return <Dashboard />;
     }
@@ -323,6 +329,22 @@ const Layout = () => {
                   className="block w-full text-left p-2 rounded hover:bg-gray-200"
                 >
                   Approval Search
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setCurrentPage('userroleassignment')}
+                  className="block w-full text-left p-2 rounded hover:bg-gray-200"
+                >
+                  User Role Assignment
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setCurrentPage('usersearchapp')}
+                  className="block w-full text-left p-2 rounded hover:bg-gray-200"
+                >
+                  User Search
                 </button>
               </li>
             </ul>
