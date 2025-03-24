@@ -1,4 +1,4 @@
-import { AlertCircle, Calendar, Clock, Edit, Plus, User, X } from 'lucide-react';
+import { AlertCircle, Calendar, Clock, Edit, Plus, Search, User, X } from 'lucide-react';
 import { useState } from 'react';
 import { Alert, AlertDescription } from '../components/ui/alert';
 
@@ -17,7 +17,7 @@ export default function ActingDutyModal({ onClose = () => {} }) {
     deputy: '',
     position: ''
   });
-  
+  const [filteredUsers, setFilteredUsers] = useState([]);
   // สถานะสำหรับ Modal เพิ่มผู้รักษาราชการแทน
   const [isAddDeputyModalOpen, setIsAddDeputyModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -35,6 +35,22 @@ export default function ActingDutyModal({ onClose = () => {} }) {
     { id: 109, name: 'นายอมร พงศ์พัฒน์', position: 'หัวหน้างานประชาสัมพันธ์', isDeputy: false },
     { id: 110, name: 'นางสาวพิมพ์ชนก รักการศึกษา', position: 'หัวหน้างานวัดผล', isDeputy: false }
   ]);
+  const usersToShow = filteredUsers.length > 0 ? filteredUsers : systemUsers;
+  
+  // เพิ่มฟังก์ชันการค้นหาเมื่อกดปุ่ม
+  const handleSearch = () => {
+    if (searchQuery.trim() === '') {
+        // ถ้าค้นหาว่าง ให้แสดงผู้ใช้ทั้งหมด
+        setFilteredUsers([]);
+      } else {
+        // กรองผู้ใช้ตามคำค้นหา
+        const filtered = systemUsers.filter(user => 
+          user.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+          user.position.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredUsers(filtered);
+      }
+  };
 
   // กำหนดช่วงเวลาสำหรับการเริ่มต้น (กรณีหลายวัน)
   const multipleTimeRangesStart = {
@@ -293,7 +309,7 @@ export default function ActingDutyModal({ onClose = () => {} }) {
                   onClick={() => setIsAddDeputyModalOpen(true)}
                 >
                   <Plus className="h-4 w-4 mr-1" />
-                  จัดการ
+                  จัดการผู้รักษาราชการแทน
                 </button>
               </div>
             </div>
@@ -498,32 +514,47 @@ export default function ActingDutyModal({ onClose = () => {} }) {
                   กำหนดผู้ที่สามารถรักษาราชการแทนได้ โดยเลือกจากรายชื่อในระบบ
                 </p>
                 
-                {/* ช่องค้นหา */}
-                <div className="mb-4">
-                  <div className="relative">
-                    <input
-                      type="text"
-                      className="w-full pl-10 pr-4 py-2 border rounded-md"
-                      placeholder="ค้นหาชื่อหรือตำแหน่ง..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+               {/* ช่องค้นหาที่ปรับปรุงแล้ว */}
+            <div className="mb-4">
+              <div className="relative flex">
+                <div className="relative flex-grow">
+                  <input
+                    type="text"
+                    className="w-full pl-10 pr-4 py-2 border rounded-l-md"
+                    placeholder="ค้นหาชื่อหรือตำแหน่ง..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        handleSearch();
+                      }
+                    }}
+                  />
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    className="h-5 w-5 absolute left-3 top-2.5 text-gray-400" 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" 
                     />
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      className="h-5 w-5 absolute left-3 top-2.5 text-gray-400" 
-                      fill="none" 
-                      viewBox="0 0 24 24" 
-                      stroke="currentColor"
-                    >
-                      <path 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round" 
-                        strokeWidth={2} 
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" 
-                      />
-                    </svg>
-                  </div>
+                  </svg>
                 </div>
+                <button
+                  type="button"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-r-md hover:bg-blue-700 flex items-center"
+                  onClick={handleSearch}
+                >
+                  <Search className="h-4 w-4 mr-1" />
+                  ค้นหา
+                </button>
+              </div>
+            </div>
                 
                 {/* รายการผู้ใช้ */}
                 <div className="overflow-hidden border rounded-md">
@@ -542,61 +573,52 @@ export default function ActingDutyModal({ onClose = () => {} }) {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {systemUsers
-                        .filter(user => 
-                          searchQuery === '' || 
-                          user.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          user.position.toLowerCase().includes(searchQuery.toLowerCase())
-                        )
-                        .map((user) => (
-                          <tr key={user.id} className="hover:bg-gray-50">
+                        {usersToShow.map((user) => (
+                            <tr key={user.id} className="hover:bg-gray-50">
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                                <div className="text-sm font-medium text-gray-900">{user.name}</div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-500">{user.position}</div>
+                                <div className="text-sm text-gray-500">{user.position}</div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-center">
-                              <button
+                                <button
                                 onClick={() => toggleDeputyStatus(user.id)}
                                 className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                  user.isDeputy
+                                    user.isDeputy
                                     ? 'bg-green-100 text-green-800 hover:bg-green-200'
                                     : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                                 }`}
-                              >
+                                >
                                 {user.isDeputy ? 'รักษาราชการแทนได้' : 'ไม่สามารถรักษาราชการแทน'}
-                              </button>
+                                </button>
                             </td>
-                          </tr>
+                            </tr>
                         ))}
-                    </tbody>
+</tbody>
                   </table>
                 </div>
                 
                 {/* ข้อความเมื่อไม่พบข้อมูล */}
-                {systemUsers.filter(user => 
-                  searchQuery === '' || 
-                  user.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                  user.position.toLowerCase().includes(searchQuery.toLowerCase())
-                ).length === 0 && (
-                  <div className="text-center py-4 text-gray-500">
+                {usersToShow.length === 0 && (
+                <div className="text-center py-4 text-gray-500">
                     ไม่พบรายชื่อที่ค้นหา
-                  </div>
+                </div>
                 )}
               </div>
               
               <div className="p-4 border-t flex justify-end space-x-2">
-                <button
-                  type="button"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                  onClick={() => {
+              <button
+                type="button"
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                onClick={() => {
                     setIsAddDeputyModalOpen(false);
                     setSearchQuery(''); // รีเซ็ตค่าค้นหาเมื่อปิด Modal
-                  }}
+                    setFilteredUsers([]); // รีเซ็ตผลการค้นหา
+                }}
                 >
-                  เสร็จสิ้น
-                </button>
+                เสร็จสิ้น
+                </button>   
               </div>
             </div>
           </div>
