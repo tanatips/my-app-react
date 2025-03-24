@@ -4,27 +4,20 @@ import Dashboard from '../pages/Dashboard';
 import DepartmentManagement from '../pages/DepartmentManagement';
 import DivisionManagement from '../pages/DivisionManagement';
 // import EmailTemplateManager from '../pages/EmailTemplateManager';
+import ActingDutyPage from '../pages/ActingDutyPage';
 import ApprovalSearch from '../pages/ApprovalSearch';
 import CriteriaForm from '../pages/CriteriaForm';
 import EmployeeForm from '../pages/EmployeeForm';
 import FlowApprove from '../pages/FlowApprove';
+import HelpingGovernment from '../pages/HelpingGovernment';
 import NotificationCenter from '../pages/NotificationCenter';
-import Orders from '../pages/Orders';
-import PasswordChangeRequestForm from '../pages/PasswordChangeRequestForm';
 import PersonalInfoForm from '../pages/PersonalInfoForm';
-import Products from '../pages/Products';
-import Reports from '../pages/Reports';
 import RequestSearch from '../pages/RequestSearch';
-import ResetPassword from '../pages/ResetPassword';
-import ServiceTransferForm from '../pages/ServiceTransferForm';
 import TransferForm from '../pages/TransferForm';
-import UserRegistrationForm from '../pages/UserRegistrationForm';
 import UserRoleAssignment from '../pages/UserRoleAssignment';
-import Users from '../pages/Users';
 import UserSearchApp from '../pages/UserSearchApp';
 import WirelessLANForm from '../pages/WirelessLANForm';
 import WorkflowApproval from '../pages/WorkflowApproval';
-import WorkflowApproval2 from '../pages/WorkflowApproval2';
 import EmailTemplateManager from './EmailTemplate/EmailTemplateManager';
 import { EOfficeRegistrationForm } from './Forms/InternetEoffice/EOfficeRegistrationForm';
 
@@ -34,14 +27,14 @@ const Layout = () => {
   
   const renderPage = () => {
     switch (currentPage) {
-      case 'users':
-        return <Users />;
-      case 'products':
-        return <Products />;
-      case 'orders':
-        return <Orders />;
-      case 'reports':
-        return <Reports />;
+      // case 'users':
+      //   return <Users />;
+      // case 'products':
+      //   return <Products />;
+      // case 'orders':
+      //   return <Orders />;
+      // case 'reports':
+      //   return <Reports />;
       case 'approve':
             return <FlowApprove />;
       case 'workflow':
@@ -50,6 +43,8 @@ const Layout = () => {
                 return <WorkflowApproval2 />;
       case 'actingDuty':
               return <ActingDutySelector />;
+      case 'actingDutyPage':
+              return <ActingDutyPage />;
       case 'notification':
               return <NotificationCenter />;
       case 'personinfoform':
@@ -63,8 +58,8 @@ const Layout = () => {
             return <DivisionManagement />;
       case 'departmentmanagement':
         return <DepartmentManagement />;
-      case 'servicetransferform':
-        return <ServiceTransferForm />;
+      case 'helpinggovernment':
+        return <HelpingGovernment />;
       case 'employees':
           return <EmployeeForm />;
       case 'resetpassword':
@@ -138,7 +133,7 @@ const Layout = () => {
         <aside className="w-64 bg-gray-100 p-4">
           <nav>
             <ul className="space-y-2">
-              <li>
+              {/* <li>
                 <button
                   onClick={() => setCurrentPage('dashboard')}
                   className="block w-full text-left p-2 rounded hover:bg-gray-200"
@@ -161,7 +156,7 @@ const Layout = () => {
                 >
                   Products
                 </button>
-              </li>
+              </li> */}
               <li>
                 <button
                   onClick={() => setCurrentPage('orders')}
@@ -212,6 +207,14 @@ const Layout = () => {
               </li>
               <li>
                 <button
+                  onClick={() => setCurrentPage('actingDutyPage')}
+                  className="block w-full text-left p-2 rounded hover:bg-gray-200"
+                >
+                  Acting Duty Page
+                </button>
+              </li>
+              <li>
+                <button
                   onClick={() => setCurrentPage('personinfoform')}
                   className="block w-full text-left p-2 rounded hover:bg-gray-200"
                 >
@@ -252,10 +255,10 @@ const Layout = () => {
               </li>
               <li>
                 <button
-                  onClick={() => setCurrentPage('servicetransferform')}
+                  onClick={() => setCurrentPage('helpinggovernment')}
                   className="block w-full text-left p-2 rounded hover:bg-gray-200"
                 >
-                  Service Transfer form
+                 Helping Government
                 </button>
               </li>
               <li>

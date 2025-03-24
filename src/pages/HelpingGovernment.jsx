@@ -7,7 +7,7 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/Label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 
-const ServiceTransferForm = () => {
+const HelpingGovernment = () => {
   // State สำหรับเก็บข้อมูลฟอร์ม
   const [formData, setFormData] = useState({
     positionId: '',
@@ -32,14 +32,6 @@ const ServiceTransferForm = () => {
   // State สำหรับตรวจสอบว่ามีการช่วยราชการที่ยังไม่สิ้นสุดอยู่หรือไม่
   const [hasActiveTransfer, setHasActiveTransfer] = useState(false);
 
-  const statuses = [
-    "รอดำเนินการ",
-    "อยู่ระหว่างการพิจารณา",
-    "อนุมัติ",
-    "ไม่อนุมัติ",
-    "ยกเลิก",
-    "สิ้นสุดการช่วยราชการ"
-  ];
 
   const departments = [
     "สำนักงานใหญ่",
@@ -319,4 +311,4 @@ const ServiceTransferForm = () => {
   );
 };
 
-export default ServiceTransferForm;
+export default HelpingGovernment;

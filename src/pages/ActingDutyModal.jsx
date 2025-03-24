@@ -1,9 +1,8 @@
 import { AlertCircle, Calendar, Clock, Edit, Plus, User, X } from 'lucide-react';
 import { useState } from 'react';
 import { Alert, AlertDescription } from '../components/ui/alert';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card';
 
-export default function ActingDutySelector() {
+export default function ActingDutyModal({ onClose = () => {} }) {
   const [periods, setPeriods] = useState([]);
   const [periodMode, setPeriodMode] = useState('single');
   const [showError, setShowError] = useState(false);
@@ -37,19 +36,19 @@ export default function ActingDutySelector() {
     { id: 110, name: 'นางสาวพิมพ์ชนก รักการศึกษา', position: 'หัวหน้างานวัดผล', isDeputy: false }
   ]);
 
-
-  // แก้ไขตรงนี้: ปรับ multipleTimeRangesStart ให้มีเต็มวันและบ่าย
+  // กำหนดช่วงเวลาสำหรับการเริ่มต้น (กรณีหลายวัน)
   const multipleTimeRangesStart = {
     full: { start: '08:30', end: '16:30', label: 'เริ่ม เต็มวัน (08:30 - 16:30)' },
     afternoon: { start: '13:00', end: '16:30', label: 'เริ่ม บ่าย (13:00 - 16:30)' }
   };
 
-  // แก้ไขตรงนี้: ปรับ multipleTimeRangesEnd ให้มีเต็มวันและเช้า
+  // กำหนดช่วงเวลาสำหรับการสิ้นสุด (กรณีหลายวัน)
   const multipleTimeRangesEnd = {
     full: { start: '08:30', end: '16:30', label: 'สิ้นสุด เต็มวัน (08:30 - 16:30)' },
     morning: { start: '08:30', end: '12:00', label: 'สิ้นสุดในช่วงเช้า (08:30 - 12:00)' }
   };
 
+  // กำหนดช่วงเวลาสำหรับกรณีวันเดียว
   const singleTimeRanges = {
     full: { start: '08:30', end: '16:30', label: 'เต็มวัน (08:30 - 16:30)' },
     morning: { start: '08:30', end: '12:00', label: 'ครึ่งวันเช้า (08:30 - 12:00)' },
@@ -97,8 +96,8 @@ export default function ActingDutySelector() {
     setCurrentPeriod({
       ...currentPeriod,
       endDate: mode === 'single' ? '' : currentPeriod.endDate,
-      startType: mode === 'single' ? 'full' : 'full', // แก้ไขตรงนี้: เปลี่ยนค่าเริ่มต้นเป็น 'full'
-      endType: mode === 'single' ? 'full' : 'full'    // แก้ไขตรงนี้: เปลี่ยนค่าเริ่มต้นเป็น 'full'
+      startType: mode === 'single' ? 'full' : 'full',
+      endType: mode === 'single' ? 'full' : 'full'
     });
   };
 
@@ -139,8 +138,8 @@ export default function ActingDutySelector() {
     setCurrentPeriod({
       startDate: '',
       endDate: '',
-      startType: 'full',  // แก้ไขตรงนี้: เปลี่ยนค่าเริ่มต้นเป็น 'full'
-      endType: 'full',    // แก้ไขตรงนี้: เปลี่ยนค่าเริ่มต้นเป็น 'full'
+      startType: 'full',
+      endType: 'full',
       type: 'full',
       deputy: '',
       position: ''
@@ -176,12 +175,61 @@ export default function ActingDutySelector() {
     ));
   };
 
+  const handleClose = () => {
+    const hasChanges = periods.length > 0 || 
+                       currentPeriod.startDate !== '' || 
+                       currentPeriod.deputy !== '';
+    
+    if (hasChanges) {
+      if (window.confirm('คุณต้องการปิดแบบฟอร์มหรือไม่? ข้อมูลที่กรอกจะไม่ถูกบันทึก')) {
+        onClose();
+      }
+    } else {
+      onClose();
+    }
+  };
+
+  const handleSubmit = () => {
+    // Logic for saving data
+    console.log('Saved periods:', periods);
+    onClose();
+  };
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg">รักษาราชการแทน</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-4xl p-6 relative">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center space-x-2">
+            <div className="bg-blue-100 p-2 rounded">
+              <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
+                <path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197" 
+                  stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <h2 className="text-xl font-semibold">รักษาราชการแทน</h2>
+          </div>
+          <button 
+            className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors"
+            onClick={handleClose}
+            aria-label="ปิด"
+          >
+            <X size={24} />
+          </button>
+        </div>
+
+        {/* User Info */}
+        <div className="flex items-center mb-6">
+          <div className="w-12 h-12 bg-green-200 rounded-full flex items-center justify-center mr-3">
+            <svg className="w-6 h-6 text-green-700" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-gray-600">ชื่อ</p>
+            <p className="font-semibold">นายสมชาย จริงใจ</p>
+          </div>
+        </div>
+        
         <div className="space-y-6">
           {showError && errorMessages.length > 0 && (
             <Alert variant="destructive">
@@ -352,7 +400,7 @@ export default function ActingDutySelector() {
 
           <div className="mt-6">
             <h3 className="text-sm font-medium mb-2">รายการรักษาราชการแทน</h3>
-            <div className="border rounded-md divide-y">
+            <div className="border rounded-md divide-y max-h-60 overflow-y-auto">
               {periods.length === 0 ? (
                 <div className="p-4 text-center text-gray-500">
                   ยังไม่มีรายการรักษาราชการแทน
@@ -411,156 +459,149 @@ export default function ActingDutySelector() {
             </div>
           </div>
 
-          {/* <div className="flex justify-center space-x-2 mt-6 pt-6 border-t">
-  <button
-    type="button"
-    className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
-    onClick={() => {
-      // TODO: Implement cancel logic
-      console.log('Cancel clicked');
-    }}
-  >
-    ยกเลิก
-  </button>
-  <button
-    type="button"
-    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-    onClick={() => {
-      // TODO: Implement save logic
-      console.log('Save clicked', periods);
-    }}
-  >
-    บันทึก
-  </button>
-</div> */}
+          {/* Footer Buttons */}
+          <div className="flex justify-end space-x-3 mt-6 pt-4 border-t">
+            <button 
+              className="px-6 py-2 border rounded hover:bg-gray-100"
+              onClick={handleClose}
+            >
+              ยกเลิก
+            </button>
+            <button 
+              className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              onClick={handleSubmit}
+            >
+              บันทึก
+            </button>
+          </div>
+        </div>
 
-          {/* Modal สำหรับเพิ่มผู้รักษาราชการแทน */}
-          {isAddDeputyModalOpen && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg shadow-lg w-full max-w-3xl mx-4">
-                <div className="p-4 border-b flex justify-between items-center">
-                  <h3 className="text-lg font-medium flex items-center">
-                    <User className="h-5 w-5 mr-2" />
-                    จัดการผู้รักษาราชการแทน
-                  </h3>
-                  <button
-                    className="text-gray-500 hover:text-gray-700"
-                    onClick={() => setIsAddDeputyModalOpen(false)}
-                  >
-                    <X className="h-5 w-5" />
-                  </button>
-                </div>
+        {/* Modal สำหรับเพิ่มผู้รักษาราชการแทน */}
+        {isAddDeputyModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-lg w-full max-w-3xl mx-4">
+              <div className="p-4 border-b flex justify-between items-center">
+                <h3 className="text-lg font-medium flex items-center">
+                  <User className="h-5 w-5 mr-2" />
+                  จัดการผู้รักษาราชการแทน
+                </h3>
+                <button
+                  className="text-gray-500 hover:text-gray-700"
+                  onClick={() => setIsAddDeputyModalOpen(false)}
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              
+              <div className="p-4">
+                <p className="text-sm text-gray-600 mb-4">
+                  กำหนดผู้ที่สามารถรักษาราชการแทนได้ โดยเลือกจากรายชื่อในระบบ
+                </p>
                 
-                <div className="p-4">
-                  <p className="text-sm text-gray-600 mb-4">
-                    กำหนดผู้ที่สามารถรักษาราชการแทนได้ โดยเลือกจากรายชื่อในระบบ
-                  </p>
-                  
-                  {/* ช่องค้นหา */}
-                  <div className="mb-4">
-                    <div className="relative">
-                      <input
-                        type="text"
-                        className="w-full pl-10 pr-4 py-2 border rounded-md"
-                        placeholder="ค้นหาชื่อหรือตำแหน่ง..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
+                {/* ช่องค้นหา */}
+                <div className="mb-4">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      className="w-full pl-10 pr-4 py-2 border rounded-md"
+                      placeholder="ค้นหาชื่อหรือตำแหน่ง..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      className="h-5 w-5 absolute left-3 top-2.5 text-gray-400" 
+                      fill="none" 
+                      viewBox="0 0 24 24" 
+                      stroke="currentColor"
+                    >
+                      <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth={2} 
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" 
                       />
-                      <svg 
-                        xmlns="http://www.w3.org/2000/svg" 
-                        className="h-5 w-5 absolute left-3 top-2.5 text-gray-400" 
-                        fill="none" 
-                        viewBox="0 0 24 24" 
-                        stroke="currentColor"
-                      >
-                        <path 
-                          strokeLinecap="round" 
-                          strokeLinejoin="round" 
-                          strokeWidth={2} 
-                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" 
-                        />
-                      </svg>
-                    </div>
+                    </svg>
                   </div>
-                  
-                  {/* รายการผู้ใช้ */}
-                  <div className="overflow-hidden border rounded-md">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gray-100">
-                        <tr>
-                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            ชื่อ-นามสกุล
-                          </th>
-                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            ตำแหน่ง
-                          </th>
-                          <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            สถานะ
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {systemUsers
-                          .filter(user => 
-                            searchQuery === '' || 
-                            user.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                            user.position.toLowerCase().includes(searchQuery.toLowerCase())
-                          )
-                          .map((user) => (
-                            <tr key={user.id} className="hover:bg-gray-50">
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm text-gray-500">{user.position}</div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-center">
-                                <button
-                                  onClick={() => toggleDeputyStatus(user.id)}
-                                  className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                    user.isDeputy
-                                      ? 'bg-green-100 text-green-800 hover:bg-green-200'
-                                      : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                                  }`}
-                                >
-                                  {user.isDeputy ? 'รักษาราชการแทนได้' : 'ไม่สามารถรักษาราชการแทน'}
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  
-                  {/* ข้อความเมื่อไม่พบข้อมูล */}
-                  {systemUsers.filter(user => 
-                    searchQuery === '' || 
-                    user.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                    user.position.toLowerCase().includes(searchQuery.toLowerCase())
-                  ).length === 0 && (
-                    <div className="text-center py-4 text-gray-500">
-                      ไม่พบรายชื่อที่ค้นหา
-                    </div>
-                  )}
                 </div>
                 
-                <div className="p-4 border-t flex justify-end space-x-2">
-                  <button
-                    type="button"
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                    onClick={() => {
-                      setIsAddDeputyModalOpen(false);
-                      setSearchQuery(''); // รีเซ็ตค่าค้นหาเมื่อปิด Modal
-                    }}
-                  >
-                    เสร็จสิ้น
-                  </button>
+                {/* รายการผู้ใช้ */}
+                <div className="overflow-hidden border rounded-md">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-100">
+                      <tr>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          ชื่อ-นามสกุล
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          ตำแหน่ง
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          สถานะ
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {systemUsers
+                        .filter(user => 
+                          searchQuery === '' || 
+                          user.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          user.position.toLowerCase().includes(searchQuery.toLowerCase())
+                        )
+                        .map((user) => (
+                          <tr key={user.id} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-500">{user.position}</div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-center">
+                              <button
+                                onClick={() => toggleDeputyStatus(user.id)}
+                                className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                  user.isDeputy
+                                    ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                                    : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                                }`}
+                              >
+                                {user.isDeputy ? 'รักษาราชการแทนได้' : 'ไม่สามารถรักษาราชการแทน'}
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
                 </div>
+                
+                {/* ข้อความเมื่อไม่พบข้อมูล */}
+                {systemUsers.filter(user => 
+                  searchQuery === '' || 
+                  user.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                  user.position.toLowerCase().includes(searchQuery.toLowerCase())
+                ).length === 0 && (
+                  <div className="text-center py-4 text-gray-500">
+                    ไม่พบรายชื่อที่ค้นหา
+                  </div>
+                )}
+              </div>
+              
+              <div className="p-4 border-t flex justify-end space-x-2">
+                <button
+                  type="button"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  onClick={() => {
+                    setIsAddDeputyModalOpen(false);
+                    setSearchQuery(''); // รีเซ็ตค่าค้นหาเมื่อปิด Modal
+                  }}
+                >
+                  เสร็จสิ้น
+                </button>
               </div>
             </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
