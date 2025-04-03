@@ -10,6 +10,9 @@ import CriteriaForm from '../pages/CriteriaForm';
 import EmployeeForm from '../pages/EmployeeForm';
 import FlowApprove from '../pages/FlowApprove';
 import HelpingGovernment from '../pages/HelpingGovernment';
+import HelpingGovernmentModal from '../pages/HelpingGovernmentModal';
+import HistoryDashboard from '../pages/HistoryDashboard';
+import LogDashboard from '../pages/LogDashboard';
 import NotificationCenter from '../pages/NotificationCenter';
 import PersonalInfoForm from '../pages/PersonalInfoForm';
 import RequestSearch from '../pages/RequestSearch';
@@ -60,6 +63,10 @@ const Layout = () => {
         return <DepartmentManagement />;
       case 'helpinggovernment':
         return <HelpingGovernment />;
+
+      case 'HelpingGovernmentModal':
+        return <HelpingGovernmentModal />;
+
       case 'employees':
           return <EmployeeForm />;
       case 'resetpassword':
@@ -83,6 +90,11 @@ const Layout = () => {
             return <UserRoleAssignment />;
       case 'usersearchapp':
               return <UserSearchApp />;
+      case 'history':
+        return <HistoryDashboard />;
+      
+      case 'log':
+          return <LogDashboard />;
          
       default:
         return <Dashboard />;
@@ -263,6 +275,14 @@ const Layout = () => {
               </li>
               <li>
                 <button
+                  onClick={() => setCurrentPage('HelpingGovernmentModal')}
+                  className="block w-full text-left p-2 rounded hover:bg-gray-200"
+                >
+                 Helping Government Modal
+                </button>
+              </li>
+              <li>
+                <button
                   onClick={() => setCurrentPage('employees')}
                   className="block w-full text-left p-2 rounded hover:bg-gray-200"
                 >
@@ -348,6 +368,22 @@ const Layout = () => {
                   className="block w-full text-left p-2 rounded hover:bg-gray-200"
                 >
                   User Search
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setCurrentPage('history')}
+                  className="block w-full text-left p-2 rounded hover:bg-gray-200"
+                >
+                  History
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setCurrentPage('log')}
+                  className="block w-full text-left p-2 rounded hover:bg-gray-200"
+                >
+                  Log Dashboard
                 </button>
               </li>
             </ul>
