@@ -78,11 +78,20 @@ const PreviewModal = ({
           <div className="w-64 flex-shrink-0">
             <h4 className="font-medium mb-2">ตัวแปรที่ใช้</h4>
             <div className="bg-gray-50 p-3 rounded border max-h-[60vh] overflow-y-auto">
-              {preview.variables.map(variable => (
-                <div key={variable} className="mb-2">
-                  <div className="font-medium text-blue-600">{`{{${variable}}}`}</div>
+            {preview.variables.map(variable => {
+              const varName = typeof variable === 'object' ? variable.variable_name : variable;
+              return (
+                <div key={varName} className="mb-2">
+                  <div className="font-medium text-blue-600">{`{{${varName}}}`}</div>
+                  {typeof variable === 'object' && variable.description && (
+                    <div className="text-sm text-gray-600">คำอธิบาย: {variable.description}</div>
+                  )}
+                  {typeof variable === 'object' && variable.example_value && (
+                    <div className="text-sm text-gray-500">ตัวอย่าง: {variable.example_value}</div>
+                  )}
                 </div>
-              ))}
+              );
+            })}
             </div>
           </div>
         </div>

@@ -31,7 +31,8 @@ export const wifiTemplates = [
         'macAddress', 'startDate', 'endDate', 'reason', 'statusLink', 'supportTel'
       ],
       isHtml: false,
-      categoryId: 2
+      categoryId: 2,
+      step: 1 // ขั้นตอน 1: แจ้งผู้ร้องขอ
     },
     
     // 2. ผู้อำนวยการกองอนุมัติ
@@ -66,7 +67,8 @@ export const wifiTemplates = [
         'approvalLink', 'expiryDays'
       ],
       isHtml: false,
-      categoryId: 2
+      categoryId: 2,
+      step: 2 // ขั้นตอน 2: แจ้งผู้อนุมัติขั้นต้น
     },
     
     // 3. ผู้อำนวยการศูนย์อนุมัติ
@@ -113,7 +115,8 @@ export const wifiTemplates = [
         'firstApprovalDate', 'approvalLink', 'rejectLink', 'supportTel', 'supportEmail'
       ],
       isHtml: true,
-      categoryId: 2
+      categoryId: 2,
+      step: 3 // ขั้นตอน 3: แจ้งผู้อนุมัติขั้นสุดท้าย
     },
     
     // 4. ผู้ดำเนินการ
@@ -152,7 +155,8 @@ export const wifiTemplates = [
         'userGroup', 'startDate', 'endDate', 'accessType', 'adminActionLink'
       ],
       isHtml: false,
-      categoryId: 2
+      categoryId: 2,
+      step: 4 // ขั้นตอน 4: แจ้งผู้ดำเนินการ
     },
     
     // 5. แจ้งผลการดำเนินการให้ผู้ร้องขอทราบ
@@ -205,7 +209,8 @@ export const wifiTemplates = [
         'username', 'userPassword', 'supportTel', 'supportEmail', 'currentYear'
       ],
       isHtml: true,
-      categoryId: 2
+      categoryId: 2,
+      step: 5 // ขั้นตอน 5: แจ้งผลการดำเนินการ
     },
     
     // 6. แจ้งเตือนการหมดอายุ WiFi
@@ -239,7 +244,8 @@ export const wifiTemplates = [
         'renewalDeadline', 'renewalLink', 'supportTel'
       ],
       isHtml: false,
-      categoryId: 2
+      categoryId: 2,
+      step: 6 // ขั้นตอน 6: แจ้งเตือนการหมดอายุ
     }
   ];
   

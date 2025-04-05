@@ -25,7 +25,8 @@ export const registrationTemplates = [
 ฝ่ายบริการเทคโนโลยีสารสนเทศ`,
     variables: ['requestId', 'requesterName', 'department', 'position', 'systemName', 'requestDate', 'reason'],
     isHtml: false,
-    categoryId: 1
+    categoryId: 1,
+    step: 1 // ขั้นตอน 1: แจ้งผู้ร้องขอ
   },
   
   // 2. ผู้อำนวยการกองอนุมัติ
@@ -54,7 +55,8 @@ export const registrationTemplates = [
 ฝ่ายบริการเทคโนโลยีสารสนเทศ`,
     variables: ['requestId', 'directorName', 'requesterName', 'department', 'position', 'systemName', 'requestDate', 'reason', 'approvalLink', 'supportTel'],
     isHtml: false,
-    categoryId: 1
+    categoryId: 1,
+    step: 2 // ขั้นตอน 2: แจ้งผู้อนุมัติขั้นต้น
   },
   
   // 3. ผู้อำนวยการศูนย์อนุมัติ
@@ -85,7 +87,8 @@ export const registrationTemplates = [
 ฝ่ายบริการเทคโนโลยีสารสนเทศ`,
     variables: ['requestId', 'centerDirectorName', 'requesterName', 'department', 'departmentFull', 'position', 'systemName', 'requestDate', 'reason', 'directorName', 'firstApprovalDate', 'approvalLink'],
     isHtml: false,
-    categoryId: 1
+    categoryId: 1,
+    step: 3 // ขั้นตอน 3: แจ้งผู้อนุมัติขั้นสุดท้าย
   },
   
   // 4. ผู้ดำเนินการ
@@ -118,7 +121,8 @@ export const registrationTemplates = [
 ระบบแจ้งเตือนอัตโนมัติ`,
     variables: ['requestId', 'adminName', 'requesterName', 'nationalId', 'email', 'phone', 'department', 'position', 'systemName', 'permissionLevel', 'requestDate', 'finalApprovalDate', 'adminActionLink'],
     isHtml: false,
-    categoryId: 1
+    categoryId: 1,
+    step: 4 // ขั้นตอน 4: แจ้งผู้ดำเนินการ
   },
   
   // 5. แจ้งผลการดำเนินการให้ผู้ร้องขอทราบ
@@ -164,9 +168,9 @@ export const registrationTemplates = [
 </div>`,
     variables: ['requestId', 'requesterName', 'username', 'temporaryPassword', 'systemName', 'permissionLevel', 'startDate', 'systemLoginUrl', 'supportTel', 'supportEmail', 'currentYear'],
     isHtml: true,
-    categoryId: 1
-  }
-  ,
+    categoryId: 1,
+    step: 5 // ขั้นตอน 5: แจ้งผลการดำเนินการ
+  },
   {
     id: 106,
     name: 'แจ้งผลการไม่อนุมัติจากผู้อำนวยการกอง',
@@ -194,7 +198,8 @@ export const registrationTemplates = [
   ฝ่ายบริการเทคโนโลยีสารสนเทศ`,
     variables: ['requestId', 'requesterName', 'department', 'position', 'systemName', 'requestDate', 'reason', 'rejectReason', 'supportTel', 'supportEmail'],
     isHtml: false,
-    categoryId: 1
+    categoryId: 1,
+    step: 7 // ขั้นตอน 7: แจ้งผลการไม่อนุมัติ
   },
   {
     id: 107,
@@ -227,7 +232,8 @@ export const registrationTemplates = [
   ฝ่ายบริการเทคโนโลยีสารสนเทศ`,
     variables: ['requestId', 'requesterName', 'department', 'position', 'systemName', 'requestDate', 'reason', 'directorName', 'rejectReason', 'additionalSuggestion', 'supportTel', 'supportEmail'],
     isHtml: false,
-    categoryId: 1
+    categoryId: 1,
+    step: 7 // ขั้นตอน 7: แจ้งผลการไม่อนุมัติ
   },
   {
     id: 108,
@@ -278,7 +284,8 @@ export const registrationTemplates = [
   </div>`,
     variables: ['requestId', 'requesterName', 'department', 'position', 'systemName', 'requestDate', 'rejectByPerson', 'rejectReason', 'additionalSuggestion', 'newRequestLink', 'supportTel', 'supportEmail', 'currentYear'],
     isHtml: true,
-    categoryId: 1
+    categoryId: 1,
+    step: 7 // ขั้นตอน 7: แจ้งผลการไม่อนุมัติ
   }
 ];
 
@@ -309,5 +316,9 @@ export const sampleData = {
   startDate: '8 เมษายน 2568',
   systemLoginUrl: 'https://edoc.example.gov.th/login',
   supportEmail: 'itsupport@example.gov.th',
-  currentYear: '2568'
-};
+  currentYear: '2568',
+  rejectReason: 'ข้อมูลที่ให้ไม่ครบถ้วน เนื่องจากไม่ได้แนบเอกสารยืนยันตัวตนประกอบการพิจารณา',
+  additionalSuggestion: 'กรุณาแนบสำเนาบัตรประจำตัวข้าราชการในการยื่นคำขอครั้งใหม่',
+  rejectByPerson: 'นางสาวรุ่งนภา วิจิตรวงศ์ (ผู้อำนวยการกองนโยบายและแผน)',
+  newRequestLink: 'https://example.gov.th/register/new?ref=REG-20250405-0123'
+}

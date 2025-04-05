@@ -1,6 +1,6 @@
-// components/EmailTemplateManager.jsx (Updated)
+// components/EmailTemplateManager.jsx (Updated with Process Steps)
 import { Eye, FileText, InfoIcon, Pencil, Plus, X } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CategoryManagement from './CategoryManagement';
 import CategorySelector from './CategorySelector';
 import EditModal from './EditModal';
@@ -20,6 +20,25 @@ const EmailTemplateManager = () => {
   const [isHtmlMode, setIsHtmlMode] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [showCategoryManagement, setShowCategoryManagement] = useState(false);
+  // ข้อมูลขั้นตอนการทำงานแบบใหม่
+  const processSteps = [
+    { id: 1, name: 'การลงทะเบียน/ขอใช้งาน', color: 'blue' },
+    { id: 2, name: 'การอนุมัติคำขอ', color: 'indigo' },
+    { id: 3, name: 'การดำเนินการ', color: 'green' },
+    { id: 4, name: 'การแจ้งผลการดำเนินการ', color: 'emerald' },
+    { id: 5, name: 'การแจ้งเตือนการหมดอายุ', color: 'amber' },
+    { id: 6, name: 'การแจ้งผลการไม่อนุมัติ', color: 'red' },
+    { id: 7, name: 'อื่นๆ', color: 'gray' }
+  ];
+
+  // ข้อมูลผู้รับ email
+  const recipientTypes = [
+    { id: 1, name: 'ผู้ร้องขอ', color: 'blue' },
+    { id: 2, name: 'ผู้อนุมัติขั้นต้น', color: 'purple' },
+    { id: 3, name: 'ผู้อนุมัติขั้นสุดท้าย', color: 'indigo' },
+    { id: 4, name: 'ผู้ดำเนินการ', color: 'green' },
+    { id: 5, name: 'อื่นๆ', color: 'gray' }
+  ];
 
   const [categories, setCategories] = useState([
     { 
@@ -45,37 +64,117 @@ const EmailTemplateManager = () => {
     content: '',
     variables: [],
     isHtml: false,
-    categoryId: null
+    categoryId: null,
+    processStep: null, // ขั้นตอนการทำงาน
+    recipientType: null  // ผู้รับ email
   });
+  // ปรับปรุงการกำหนด process step และ recipient type สำหรับ templates
+  const updateTemplatesWithProcessStepsAndRecipients = () => {
+    // ฟังก์ชันช่วยกำหนดค่าขั้นตอนและผู้รับ
+    const assignStepsAndRecipients = (templates) => {
+      return templates.map(template => {
+        let processStep = 7; // ค่าเริ่มต้นเป็น "อื่นๆ"
+        let recipientType = 5; // ค่าเริ่มต้นเป็น "อื่นๆ"
+        
+        // กำหนดตามระบบ WiFi
+        if (template.categoryId === 2) {
+          if (template.id === 201) {
+            processStep = 1; // การลงทะเบียน/ขอใช้งาน
+            recipientType = 1; // ผู้ร้องขอ
+          } else if (template.id === 202) {
+            processStep = 1; // การลงทะเบียน/ขอใช้งาน (อยู่ในกระบวนการลงทะเบียนเดียวกัน)
+            recipientType = 2; // ผู้อนุมัติขั้นต้น
+          } else if (template.id === 203) {
+            processStep = 2; // การอนุมัติคำขอ
+            recipientType = 3; // ผู้อนุมัติขั้นสุดท้าย
+          } else if (template.id === 204) {
+            processStep = 3; // การดำเนินการ
+            recipientType = 4; // ผู้ดำเนินการ
+          } else if (template.id === 205) {
+            processStep = 4; // การแจ้งผลการดำเนินการ
+            recipientType = 1; // ผู้ร้องขอ
+          } else if (template.id === 206) {
+            processStep = 5; // การแจ้งเตือนการหมดอายุ
+            recipientType = 1; // ผู้ร้องขอ
+          }
+        }
+        
+        // กำหนดตามระบบลงทะเบียน
+        else if (template.categoryId === 1) {
+          if (template.id === 101) {
+            processStep = 1; // การลงทะเบียน/ขอใช้งาน
+            recipientType = 1; // ผู้ร้องขอ
+          } else if (template.id === 102) {
+            processStep = 1; // การลงทะเบียน/ขอใช้งาน (อยู่ในกระบวนการลงทะเบียนเดียวกัน)
+            recipientType = 2; // ผู้อนุมัติขั้นต้น
+          } else if (template.id === 103) {
+            processStep = 2; // การอนุมัติคำขอ
+            recipientType = 3; // ผู้อนุมัติขั้นสุดท้าย
+          } else if (template.id === 104) {
+            processStep = 3; // การดำเนินการ
+            recipientType = 4; // ผู้ดำเนินการ
+          } else if (template.id === 105) {
+            processStep = 4; // การแจ้งผลการดำเนินการ
+            recipientType = 1; // ผู้ร้องขอ
+          } else if ([106, 107, 108].includes(template.id)) {
+            processStep = 6; // การแจ้งผลการไม่อนุมัติ
+            recipientType = 1; // ผู้ร้องขอ
+          }
+        }
+        
+        // กำหนดตามระบบ e-office
+        else if (template.categoryId === 3) {
+          if (template.id === 301) {
+            processStep = 1; // การลงทะเบียน/ขอใช้งาน
+            recipientType = 1; // ผู้ร้องขอ
+          } else if (template.id === 302) {
+            processStep = 1; // การลงทะเบียน/ขอใช้งาน (อยู่ในกระบวนการลงทะเบียนเดียวกัน)
+            recipientType = 2; // ผู้อนุมัติขั้นต้น
+          } else if (template.id === 303) {
+            processStep = 2; // การอนุมัติคำขอ
+            recipientType = 3; // ผู้อนุมัติขั้นสุดท้าย
+          } else if (template.id === 304) {
+            processStep = 3; // การดำเนินการ
+            recipientType = 4; // ผู้ดำเนินการ
+          } else if (template.id === 305) {
+            processStep = 4; // การแจ้งผลการดำเนินการ
+            recipientType = 1; // ผู้ร้องขอ
+          } else if (template.id === 306) {
+            processStep = 5; // การแจ้งเตือนการหมดอายุ
+            recipientType = 1; // ผู้ร้องขอ
+          } else if ([307, 308, 309].includes(template.id)) {
+            processStep = 6; // การแจ้งผลการไม่อนุมัติ
+            recipientType = 1; // ผู้ร้องขอ
+          } else if (template.id === 310) {
+            processStep = 1; // การลงทะเบียน/ขอใช้งาน (แจ้งให้แก้ไขข้อมูล)
+            recipientType = 1; // ผู้ร้องขอ
+          }
+        }
+        
+        // เพิ่มฟิลด์ใหม่เข้าไปใน template
+        return { 
+          ...template, 
+          processStep, 
+          recipientType
+        };
+      });
+    };
 
-  const [templates, setTemplates] = useState([
-//     {
-//       id: 1,
-//       name: 'แจ้งการขอใช้งาน WiFi',
-//       subject: 'แจ้งการขอใช้งาน WiFi - {{requestId}}',
-//       content: `เรียน {{supervisorName}},
+    // ใช้ฟังก์ชันกับ template แต่ละชุด
+    const wifiTemplatesUpdated = assignStepsAndRecipients(wifiTemplates);
+    const registrationTemplatesUpdated = assignStepsAndRecipients(registrationTemplates);
+    const eofficeTemplatesUpdated = assignStepsAndRecipients(eofficeTemplates);
+    
+    return [...wifiTemplatesUpdated, ...registrationTemplatesUpdated, ...eofficeTemplatesUpdated];
+  };
 
-// มีการขอใช้งาน WiFi จากพนักงานในสังกัดของท่าน โดยมีรายละเอียดดังนี้:
+  const [templates, setTemplates] = useState([]);
 
-// ผู้ขอใช้งาน: {{requesterName}}
-// แผนก: {{department}}
-// วันที่ขอ: {{requestDate}}
-// เหตุผล: {{reason}}
-
-// กรุณาดำเนินการอนุมัติผ่านระบบ หรือคลิกที่ลิงก์ด้านล่าง:
-// {{approvalLink}}
-
-// ขอแสดงความนับถือ,
-// ทีม IT Support`,
-//       variables: ['requestId', 'supervisorName', 'requesterName', 'department', 'requestDate', 'reason', 'approvalLink'],
-//       isHtml: false,
-//       categoryId: 2
-//     },
-    ...registrationTemplates,
-    ...wifiTemplates,
-    ...eofficeTemplates
-  ]);
-
+  // ใช้ useEffect เพื่อโหลดข้อมูล templates เมื่อคอมโพเนนต์เริ่มทำงาน
+  useEffect(() => {
+    const initialTemplates = updateTemplatesWithProcessStepsAndRecipients();
+    setTemplates(initialTemplates);
+  }, []);
   // Utility Functions
   const extractVariables = (content) => {
     const variableMatches = content.match(/{{(\w+)}}/g) || [];
@@ -105,25 +204,35 @@ const EmailTemplateManager = () => {
   const getCategory = (categoryId) => {
     return categories.find(c => c.id === categoryId) || null;
   };
+  
+  // Get process step info by id
+  const getProcessStep = (stepId) => {
+    return processSteps.find(s => s.id === stepId) || processSteps[6]; // Default to "อื่นๆ"
+  };
+  
+  // Get recipient type info by id
+  const getRecipientType = (typeId) => {
+    return recipientTypes.find(t => t.id === typeId) || recipientTypes[4]; // Default to "อื่นๆ"
+  };
 
   // Event Handlers
   const handleSave = () => {
     if (editing) {
+      // ตรวจสอบว่า editing มี variables หรือไม่ เพื่อแน่ใจว่าจะไม่หาย
       setTemplates(prev => prev.map(t => 
         t.id === editing.id 
           ? { 
-              ...editing, 
-              variables: extractVariables(editing.content),
+              ...editing,
               isHtml: isHtmlMode
             } 
           : t
       ));
       setEditing(null);
     } else if (showCreate) {
+      // ตรวจสอบว่า newTemplate มี variables หรือไม่
       const newTemplateToSave = {
         ...newTemplate,
         id: Date.now(),
-        variables: extractVariables(newTemplate.content),
         isHtml: isHtmlMode
       };
       setTemplates(prev => [...prev, newTemplateToSave]);
@@ -133,12 +242,28 @@ const EmailTemplateManager = () => {
         content: '', 
         variables: [], 
         isHtml: false,
-        categoryId: null
+        categoryId: null,
+        processStep: null,
+        recipientType: null
       });
       setShowCreate(false);
     }
   };
-
+// B. เพิ่มฟังก์ชัน getVariableNamesFromTemplate สำหรับดึงชื่อตัวแปรให้ถูกต้อง
+const getVariableNamesFromTemplate = (template) => {
+  if (!template.variables || !Array.isArray(template.variables)) {
+    return [];
+  }
+  
+  return template.variables.map(v => {
+    if (typeof v === 'object' && v.variable_name) {
+      return v.variable_name;
+    } else if (typeof v === 'string') {
+      return v;
+    }
+    return null;
+  }).filter(Boolean); // กรองค่า null ออก
+};
   const handleDelete = (id) => {
     setTemplates(prev => prev.filter(template => template.id !== id));
   };
@@ -146,26 +271,36 @@ const EmailTemplateManager = () => {
   const handlePreview = (template) => {
     setPreview(template);
     setIsHtmlMode(template.isHtml);
+  
+    // ดึงชื่อตัวแปรทั้งหมด
+    const variableNames = getVariableNamesFromTemplate(template);
+  
     if (template.categoryId === 1) { // หมวดหมู่ลงทะเบียน
-        const defaultData = template.variables.reduce((acc, variable) => {
-        acc[variable] = `{{${variable}}}`;
-        return acc;
-      }, {});
+      const defaultData = {};
+      variableNames.forEach(varName => {
+        defaultData[varName] = `{{${varName}}}`;
+      });
       setPreviewData(JSON.stringify(defaultData, null, 2));
     } else if (template.categoryId === 2) { // หมวดหมู่ WiFi
-        // ใช้ wifiSampleData
-        const relevantData = {};
-        template.variables.forEach(variable => {
-          if (wifiSampleData[variable] !== undefined) {
-            relevantData[variable] = wifiSampleData[variable];
-          } else {
-            relevantData[variable] = `{{${variable}}}`;
-          }
-        });
-        setPreviewData(JSON.stringify(relevantData, null, 2));
+      const relevantData = {};
+      variableNames.forEach(varName => {
+        if (wifiSampleData[varName] !== undefined) {
+          relevantData[varName] = wifiSampleData[varName];
+        } else {
+          relevantData[varName] = `{{${varName}}}`;
         }
-        setParseError('');
-      };
+      });
+      setPreviewData(JSON.stringify(relevantData, null, 2));
+    } else {
+      // กรณีเป็นหมวดหมู่อื่นๆ
+      const defaultData = {};
+      variableNames.forEach(varName => {
+        defaultData[varName] = `{{${varName}}}`;
+      });
+      setPreviewData(JSON.stringify(defaultData, null, 2));
+    }
+    setParseError('');
+  };
 
   const handleUpdatePreviewData = () => {
     try {
@@ -183,6 +318,34 @@ const EmailTemplateManager = () => {
     setIsHtmlMode(false);
   };
 
+  // ฟังก์ชั่นสำหรับแสดงสีของแต่ละขั้นตอน
+  const getStepColorClass = (stepId) => {
+    const step = getProcessStep(stepId);
+    const colorMap = {
+      'blue': 'bg-blue-100 text-blue-800',
+      'indigo': 'bg-indigo-100 text-indigo-800',
+      'purple': 'bg-purple-100 text-purple-800',
+      'green': 'bg-green-100 text-green-800',
+      'emerald': 'bg-emerald-100 text-emerald-800',
+      'amber': 'bg-amber-100 text-amber-800',
+      'red': 'bg-red-100 text-red-800',
+      'gray': 'bg-gray-100 text-gray-800'
+    };
+    return colorMap[step.color] || 'bg-gray-100 text-gray-800';
+  };
+  
+  // ฟังก์ชั่นสำหรับแสดงสีของแต่ละประเภทผู้รับ
+  const getRecipientColorClass = (typeId) => {
+    const type = getRecipientType(typeId);
+    const colorMap = {
+      'blue': 'bg-blue-100 text-blue-800',
+      'purple': 'bg-purple-100 text-purple-800',
+      'indigo': 'bg-indigo-100 text-indigo-800',
+      'green': 'bg-green-100 text-green-800',
+      'gray': 'bg-gray-100 text-gray-800'
+    };
+    return colorMap[type.color] || 'bg-gray-100 text-gray-800';
+  };
   return (
     <div className="p-6">
       <div className="bg-white rounded-lg shadow">
@@ -204,7 +367,9 @@ const EmailTemplateManager = () => {
                   content: '', 
                   variables: [], 
                   isHtml: false,
-                  categoryId: selectedCategory
+                  categoryId: selectedCategory,
+                  processStep: null,
+                  recipientType: null
                 });
               }}
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center gap-2"
@@ -227,7 +392,6 @@ const EmailTemplateManager = () => {
             selectedCategory={selectedCategory}
             onSelectCategory={setSelectedCategory}
           />
-
           <div className="space-y-4">
             {filteredTemplates.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
@@ -239,7 +403,8 @@ const EmailTemplateManager = () => {
                   <div className="flex justify-between items-center mb-4">
                     <div>
                       <h3 className="font-semibold">{template.name}</h3>
-                      <div className="flex items-center gap-2 mt-1">
+                      <div className="flex items-center gap-2 mt-1 flex-wrap">
+                        {/* หมวดหมู่ */}
                         {template.categoryId && (
                           <div className="relative group inline-block">
                             <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded flex items-center gap-1 cursor-help">
@@ -255,6 +420,26 @@ const EmailTemplateManager = () => {
                             )}
                           </div>
                         )}
+                        
+                        {/* ขั้นตอนการทำงาน */}
+                        {template.processStep && (
+                          <div className="relative group inline-block">
+                            <span className={`text-xs px-2 py-1 rounded flex items-center gap-1 ${getStepColorClass(template.processStep)}`}>
+                              <span className="font-medium">ขั้นตอน {template.processStep}</span>: {getProcessStep(template.processStep).name}
+                            </span>
+                          </div>
+                        )}
+                        
+                        {/* ผู้รับ email */}
+                        {template.recipientType && (
+                          <div className="relative group inline-block">
+                            <span className={`text-xs px-2 py-1 rounded flex items-center gap-1 ${getRecipientColorClass(template.recipientType)}`}>
+                              <span className="font-medium">ส่งถึง</span>: {getRecipientType(template.recipientType).name}
+                            </span>
+                          </div>
+                        )}
+                        
+                        {/* รูปแบบ HTML */}
                         {template.isHtml && (
                           <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
                             HTML
@@ -296,7 +481,6 @@ const EmailTemplateManager = () => {
           </div>
         </div>
       </div>
-
       {/* Modals */}
       <EditModal
         isOpen={showCreate || editing !== null}
