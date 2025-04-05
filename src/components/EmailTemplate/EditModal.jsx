@@ -1,4 +1,4 @@
-// components/EditModal.jsx
+// components/EditModal.jsx (Updated)
 import { X } from 'lucide-react';
 import React from 'react';
 import RichTextEditor from './RichTextEditor';
@@ -15,6 +15,7 @@ const EditModal = ({
   setEditing,
   setNewTemplate,
   extractVariables,
+  categories,
   defaultVariables = ['requestId', 'supervisorName', 'requesterName', 'department', 'requestDate', 'reason', 'approvalLink']
 }) => {
   if (!isOpen) return null;
@@ -31,7 +32,7 @@ const EditModal = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
+      <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] flex flex-col">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold">
             {editing ? 'แก้ไข Template' : 'สร้าง Template ใหม่'}
@@ -41,7 +42,7 @@ const EditModal = ({
           </button>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-4 overflow-y-auto flex-1 pr-1">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               ชื่อ Template
@@ -52,6 +53,29 @@ const EditModal = ({
               className="w-full p-2 border rounded"
               placeholder="เช่น แจ้งเตือนการหมดอายุ WiFi"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              หมวดหมู่
+            </label>
+            <select
+              value={template.categoryId || ''}
+              onChange={(e) => handleChange('categoryId', e.target.value ? Number(e.target.value) : null)}
+              className="w-full p-2 border rounded"
+            >
+              <option value="">-- เลือกหมวดหมู่ --</option>
+              {categories.map(category => (
+                <option key={category.id} value={category.id}>
+                  {category.name}{category.description ? ` - ${category.description.substring(0, 40)}${category.description.length > 40 ? '...' : ''}` : ''}
+                </option>
+              ))}
+            </select>
+            {template.categoryId && categories.find(c => c.id === Number(template.categoryId))?.description && (
+              <p className="mt-1 text-xs text-gray-500">
+                {categories.find(c => c.id === Number(template.categoryId)).description}
+              </p>
+            )}
           </div>
 
           <div>
